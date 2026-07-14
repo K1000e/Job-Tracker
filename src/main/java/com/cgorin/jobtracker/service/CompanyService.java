@@ -1,6 +1,7 @@
 package com.cgorin.jobtracker.service;
 
 import com.cgorin.jobtracker.model.Company;
+import com.cgorin.jobtracker.exception.InvalidCompanyException;
 import com.cgorin.jobtracker.exception.CompanyNotFoundException;
 import com.cgorin.jobtracker.exception.CompanyAlreadyExistsException;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,11 @@ public class CompanyService {
         companies.add(new Company(
                 0,
                 "Capgemini",
-                "Sophia Antipolis",
                 "https://www.capgemini.com"
         ));
         companies.add(new Company(
                 1,
                 "Amadeus",
-                "Nice",
                 "https://amadeus.com"
         ));
     }
@@ -40,59 +39,45 @@ public class CompanyService {
                 return company;
             }
         }
-        throw new RuntimeException("Company with id " + id + " not found");
+        throw new CompanyNotFoundException(id);
     }
 
-    public void addCompany(Company company){
-        if (companyAlreadyExist(company)){
-            throw new RuntimeException("Company with id " + company.getId() + " already exists");
+    public void addCompany(Company company) {
+        if (existsById(company)){
+            throw new CompanyAlreadyExistsException(company.getId());
         }
-        if  (company.getName() == null){
-            throw new RuntimeException("Company name is required");
-        }
-        if (company.getWebsite() == null){
-            throw new RuntimeException("Company website is required");
-        }
-        if (company.getCity() == null){
-            throw new RuntimeException("Company city is required");
-        }
+        validateCompany(company);
         companies.add(company);
     }
-    public void deleteCompany(int id){
-        if (!companies.removeIf(company -> company.getId() == id)){
-            throw new RuntimeException("Company with id " + id + " not found");
+
+    private void validateCompany(Company company) {
+        if (company.getName() == null || company.getName().isBlank()) {
+            throw new InvalidCompanyException("Company name is required");
+        }
+        if (company.getWebsite() == null || company.getWebsite().isBlank()) {
+            throw new InvalidCompanyException("Company website is required");
         }
     }
-    public void updateCompany(Company company, int id){
+
+    public void deleteCompany(int id) {
+        if (!companies.removeIf(company -> company.getId() == id)){
+            throw new CompanyNotFoundException(id);
+        }
+    }
+    public void updateCompany(Company company, int id) {
         for (int i = 0; i < companies.size(); i++) {
             if (companies.get(i).getId() == id) {
-
-                // validate required fields (same checks as addCompany)
-                if (company.getName() == null){
-                    throw new RuntimeException("Company name is required");
-                }
-                if (company.getWebsite() == null){
-                    throw new RuntimeException("Company website is required");
-                }
-                if (company.getCity() == null){
-                    throw new RuntimeException("Company city is required");
-                }
-
+                validateCompany(company);
                 // ignore id sent in the request and use the id from the URL
-                Company updated = new Company(id, company.getName(), company.getCity(), company.getWebsite());
+                Company updated = new Company(id, company.getName(), company.getWebsite());
                 companies.set(i, updated);
                 return;
             }
         }
-        throw new RuntimeException("Company id not found");
+        throw new CompanyNotFoundException(id);
     }
 
-    private boolean companyAlreadyExist(Company company){
-        for (Company existingCompany : companies){
-            if (existingCompany.getId() == company.getId()){
-                return true;
-            }
-        }
-        return false;
+    private boolean existsById(Company company){
+        return companies.stream().anyMatch(o -> o.getId() == company.getId());
     }
 }
