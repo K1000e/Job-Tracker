@@ -1,7 +1,7 @@
 package com.cgorin.jobtracker.exception;
 
 public class CompanyAlreadyExistsException extends RuntimeException {
-    public CompanyAlreadyExistsException(int id) {
+    public CompanyAlreadyExistsException(Long id) {
         super("Company"  + id + " already exists");
     }
 }

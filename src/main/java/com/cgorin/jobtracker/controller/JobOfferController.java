@@ -2,6 +2,9 @@ package com.cgorin.jobtracker.controller;
 
 import com.cgorin.jobtracker.model.Status;
 import com.cgorin.jobtracker.service.JobOfferService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.cgorin.jobtracker.model.JobOffer;
 
@@ -13,36 +16,39 @@ public class JobOfferController {
 
     public JobOfferController(JobOfferService jobOfferService) { this.jobOfferService = jobOfferService; }
 
-    @GetMapping("/offers")
-    public List<JobOffer> getAllJobOffers(){ return jobOfferService.getOffers();}
+    @GetMapping("/job_offers")
+    public List<JobOffer> getAllJobOffers(){ return jobOfferService.getJobOffers();}
 
-    @PostMapping("/offers")
-    public void createJobOffer(@RequestBody JobOffer jobOffer){
-        jobOfferService.addJobOffer(jobOffer);
+    @PostMapping("/job_offers")
+    public ResponseEntity<JobOffer> createJobOffer(@RequestBody @Valid JobOffer jobOffer){
+        JobOffer offer = jobOfferService.addJobOffer(jobOffer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(offer);
     }
 
-    @GetMapping("/offers/{id}")
-    public JobOffer getJobOfferById(@PathVariable int id){
+    @GetMapping("/job_offers/{id}")
+    public JobOffer getJobOfferById(@PathVariable Long id){
         return jobOfferService.getJobOffer(id);
     }
 
-    @DeleteMapping("/offers/{id}")
-    public void deleteJobOfferById(@PathVariable int id){
+    @DeleteMapping("/job_offers/{id}")
+    public ResponseEntity<Void> deleteJobOfferById(@PathVariable Long id){
         jobOfferService.deleteJobOffer(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/offers/{id}")
-    public void updateJobOfferById(@PathVariable int id, @RequestBody JobOffer jobOffer){
+    @PutMapping("/job_offers/{id}")
+    public ResponseEntity<JobOffer> updateJobOfferById(@PathVariable Long id, @RequestBody @Valid JobOffer jobOffer){
         jobOfferService.updateJobOffer(jobOffer, id);
+        return ResponseEntity.ok(jobOffer);
     }
 
-    @GetMapping("/offers/status/{status}")
+    @GetMapping("/job_offers/status/{status}")
     public List<JobOffer> getJobOffersByStatus(@PathVariable Status status){
         return jobOfferService.getByStatus(status);
     }
 
-    @GetMapping("/offers/company/{id}")
-    public List<JobOffer> getJobOffersByCompanyId(@PathVariable int id){
+    @GetMapping("/job_offers/company/{id}")
+    public List<JobOffer> getJobOffersByCompanyId(@PathVariable Long id){
         return jobOfferService.getByCompanyId(id);
     }
 }

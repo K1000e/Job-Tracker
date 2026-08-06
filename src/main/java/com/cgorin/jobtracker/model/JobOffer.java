@@ -1,29 +1,49 @@
 package com.cgorin.jobtracker.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.URL;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Entity
 public class JobOffer {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @NotBlank
     private String title;
-    private int companyId;
+    @ManyToOne
+    @JoinColumn(name = "company_id",  nullable = false)
+    @NotNull
+    private Company company;
+
+    @NotBlank
     private String location;
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private Status status;
+    @URL
     private String jobUrl;
     private String notes;
     private LocalDate applicationDate;
     private LocalDateTime interviewDate;
     private boolean remote;
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private OfferType offerType;
     private String contact;
+    @Email
     private String email;
 
 
     public JobOffer() {}
-    public JobOffer(int id, String title, int companyId, String location, Status status, String jobUrl, String notes,  LocalDate applicationDate, LocalDateTime interviewDate, boolean remote, OfferType offerType, String contact, String email) {
-        this.id = id;
+    public JobOffer(String title, Company company, String location, Status status, String jobUrl, String notes,  LocalDate applicationDate, LocalDateTime interviewDate, boolean remote, OfferType offerType, String contact, String email) {
         this.title = title;
-        this.companyId = companyId;
+        this.company = company;
         this.location = location;
         this.status = status;
         this.jobUrl = jobUrl;
@@ -35,9 +55,9 @@ public class JobOffer {
         this.contact = contact;
         this.email = email;
     }
-    public int getId() {return id;}
+    public Long getId() {return id;}
     public String getTitle() {return title;}
-    public int getCompanyId() {return companyId;}
+    public Company getCompany() {return company;}
     public String getLocation() {return location;}
     public Status getStatus() { return status; }
     public String getJobUrl() { return jobUrl; }
@@ -48,4 +68,16 @@ public class JobOffer {
     public OfferType getOfferType() { return offerType; }
     public String getContact() { return contact; }
     public String getEmail() { return email; }
+    public void setTitle(String title) {this.title = title;}
+    public void setCompany(Company company) {this.company = company;}
+    public void setLocation(String location) {this.location = location;}
+    public void setStatus(Status status) {this.status = status;}
+    public void setJobUrl(String jobUrl) {this.jobUrl = jobUrl;}
+    public void setNotes(String notes) {this.notes = notes;}
+    public void setApplicationDate(LocalDate applicationDate) {this.applicationDate = applicationDate;}
+    public void setInterviewDate(LocalDateTime interviewDate) {this.interviewDate = interviewDate;}
+    public void setRemote(boolean remote) {this.remote = remote;}
+    public void setOfferType(OfferType offerType) {this.offerType = offerType;}
+    public void setContact(String contact) {this.contact = contact;}
+    public void setEmail(String email) {this.email = email;}
 }

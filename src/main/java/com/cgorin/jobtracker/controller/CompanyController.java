@@ -2,6 +2,9 @@ package com.cgorin.jobtracker.controller;
 
 import com.cgorin.jobtracker.service.CompanyService;
 import com.cgorin.jobtracker.model.Company;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,22 +23,25 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
-    public void addCompany(@RequestBody Company company) {
-        companyService.addCompany(company);
+    public ResponseEntity<Company> addCompany(@RequestBody @Valid Company company) {
+        Company savedCompany = companyService.addCompany(company);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCompany);
     }
 
     @GetMapping("/companies/{id}")
-    public Company getCompany(@PathVariable Integer id) {
+    public Company getCompany(@PathVariable Long id) {
         return companyService.getCompany(id);
     }
 
     @DeleteMapping("/companies/{id}")
-    public void deleteCompany(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/companies/{id}")
-    public void updateCompany(@RequestBody Company company, @PathVariable Integer id) {
-        companyService.updateCompany(company, id);
+    public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company, @PathVariable Long id) {
+        Company savedCompany = companyService.updateCompany(company, id);
+        return ResponseEntity.ok(savedCompany);
     }
 }

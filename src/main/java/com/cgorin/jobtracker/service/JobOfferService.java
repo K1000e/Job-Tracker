@@ -1,105 +1,97 @@
 package com.cgorin.jobtracker.service;
+
+import com.cgorin.jobtracker.exception.CompanyNotFoundException;
 import com.cgorin.jobtracker.exception.InvalidJobOfferException;
-import com.cgorin.jobtracker.exception.JobOfferNotFoundException;
-import com.cgorin.jobtracker.exception.JobOffersAlreadyExistsException;
+import com.cgorin.jobtracker.exception.JobOfferNotFoundException;import com.cgorin.jobtracker.model.Company;
 import com.cgorin.jobtracker.model.JobOffer;
-import com.cgorin.jobtracker.model.OfferType;
 import com.cgorin.jobtracker.model.Status;
+import com.cgorin.jobtracker.repository.CompanyRepository;
+import com.cgorin.jobtracker.repository.JobOfferRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JobOfferService {
-    private final List<JobOffer> offers;
+    private final JobOfferRepository jobOfferRepository;
+    private final CompanyRepository companyRepository;
 
-    public JobOfferService() {
-        offers = new ArrayList<>();
-
-        offers.add(new JobOffer(
-                0,
-                "Backend Java Developer",
-                1,
-                "Sophia Antipolis",
-                Status.APPLIED,
-                "https://...",
-                "Alternance Spring Boot",
-                LocalDate.now(),
-                null,
-                false,
-                OfferType.APPRENTICESHIP,
-                "Jean Dupont",
-                "jean@company.com"
-        ));
+    public JobOfferService(JobOfferRepository jobOfferRepository, CompanyRepository companyRepository) {
+        this.jobOfferRepository = jobOfferRepository;
+        this.companyRepository = companyRepository;
     }
 
-    public JobOffer getJobOffer(int id) {
-        for (JobOffer jobOffer : offers){
-            if  (jobOffer.getId() == id){
-                return jobOffer;
-            }
+    public JobOffer getJobOffer(Long id) {
+        return jobOfferRepository.findById(id)
+                .orElseThrow(() -> new JobOfferNotFoundException(id));
+    }
+
+    public List<JobOffer> getJobOffers() {
+        return jobOfferRepository.findAll();
+    }
+
+    public JobOffer addJobOffer(JobOffer jobOffer) {
+        if (jobOffer.getId() != null) {
+            throw new InvalidJobOfferException("Cannot specify id when creating a job offer");
         }
-        throw new JobOfferNotFoundException(id);
-        // a changer
-    }
-
-    public List<JobOffer> getOffers() { return new ArrayList<>(offers); }
-
-    public void addJobOffer(JobOffer jobOffer) {
-        if (existsById(jobOffer))
-            throw new JobOffersAlreadyExistsException(jobOffer.getId());
         validateJobOffer(jobOffer);
-        offers.add(jobOffer);
+        return jobOfferRepository.save(jobOffer);
     }
-    public void deleteJobOffer(int id) {
-        if (!offers.removeIf(offer -> offer.getId() == id)) {
+    public void deleteJobOffer(Long id) {
+        if (!jobOfferRepository.existsById(id)) {
             throw new JobOfferNotFoundException(id);
         }
+        jobOfferRepository.deleteById(id);
     }
-    public void updateJobOffer(JobOffer jobOffer,  int id) {
-        validateJobOffer(jobOffer);
-        for (int i = 0; i < offers.size(); i++) {
-            if (offers.get(i).getId() == id) {
-                offers.set(i, jobOffer);
-                return;
-            }
-        }
+    public JobOffer updateJobOffer(JobOffer jobOffer,  Long id) {
+        JobOffer offer = jobOfferRepository.findById(id)
+                .orElseThrow(() -> new JobOfferNotFoundException(id));
+        offer.setTitle(jobOffer.getTitle());
+        offer.setCompany(jobOffer.getCompany());
+        offer.setLocation(jobOffer.getLocation());
+        offer.setStatus(jobOffer.getStatus());
+        offer.setJobUrl(jobOffer.getJobUrl());
+        offer.setNotes(jobOffer.getNotes());
+        offer.setApplicationDate(jobOffer.getApplicationDate());
+        offer.setInterviewDate(jobOffer.getInterviewDate());
+        offer.setRemote(jobOffer.isRemote());
+        offer.setOfferType(jobOffer.getOfferType());
+        offer.setContact(jobOffer.getContact());
+        offer.setEmail(jobOffer.getEmail());
+        validateJobOffer(offer);
+        return jobOfferRepository.save(offer);
     }
 
-    public List<JobOffer> getByCompanyId(int companyId) {
-        return offers.stream().filter(o -> o.getCompanyId() == companyId).toList();
+    public List<JobOffer> getByCompany(Company company) {
+        return jobOfferRepository.findByCompany(company);
     }
 
-    public List<JobOffer> getByStatus(Status status) {
-        return offers.stream().filter(o -> status == o.getStatus()).toList();
+    public List<JobOffer> getByStatus(Status status)     {
+       return jobOfferRepository.findByStatus(status);
     }
 
-    private boolean existsById(JobOffer jobOffer) {
-        return offers.stream().anyMatch(o -> o.getId() == jobOffer.getId());
+    public List<JobOffer> getByCompanyId(Long id) {
+        return jobOfferRepository.findByCompanyId(id);
     }
 
     private void validateJobOffer(JobOffer jobOffer) {
-
-        if (jobOffer.getTitle() == null || jobOffer.getTitle().isBlank()) {
+        if (jobOffer.getTitle() == null || jobOffer.getTitle().isBlank())
             throw new InvalidJobOfferException("Title is required");
-        }
 
-        if (jobOffer.getCompanyId() < 0) {
-            throw new InvalidJobOfferException("Invalid company");
-        }
-
-        if (jobOffer.getLocation() == null || jobOffer.getLocation().isBlank()) {
+        if (jobOffer.getLocation() == null || jobOffer.getLocation().isBlank())
             throw new InvalidJobOfferException("Location is required");
-        }
 
-        if (jobOffer.getStatus() == null) {
+        if (jobOffer.getStatus() == null)
             throw new InvalidJobOfferException("Status is required");
-        }
 
-        if (jobOffer.getOfferType() == null) {
+        if (jobOffer.getOfferType() == null)
             throw new InvalidJobOfferException("Offer type is required");
+
+        Company storedCompany = companyRepository.findById(jobOffer.getCompany().getId())
+                .orElseThrow(() -> new CompanyNotFoundException(jobOffer.getCompany().getId()));
+
+        if (!storedCompany.equals(jobOffer.getCompany())) {
+            throw new InvalidJobOfferException("Job offer company does not match stored company");
         }
     }
 }
