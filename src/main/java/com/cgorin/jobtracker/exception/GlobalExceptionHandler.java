@@ -1,10 +1,12 @@
 package com.cgorin.jobtracker.exception;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +21,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(response);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @SuppressWarnings("unused")
+    public ResponseEntity<ErrorResponse> handleJsonError(HttpMessageNotReadableException ignored) {
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Invalid request body"
+        );
+    }
+    
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
+    @SuppressWarnings("unused")
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ignored) {
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred"
@@ -31,8 +43,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult()
                 .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+                .stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("Invalid data");
 
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
@@ -48,7 +62,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CompanyHasJobOffersException.class)
-    public ResponseEntity<ErrorResponse> CompanyHasJobOffersException(CompanyHasJobOffersException e) {
+    public ResponseEntity<ErrorResponse> handleCompanyHasJobOffers(CompanyHasJobOffersException e) {
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 

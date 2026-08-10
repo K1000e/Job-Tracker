@@ -2,7 +2,8 @@ package com.cgorin.jobtracker.service;
 
 import com.cgorin.jobtracker.exception.CompanyNotFoundException;
 import com.cgorin.jobtracker.exception.InvalidJobOfferException;
-import com.cgorin.jobtracker.exception.JobOfferNotFoundException;import com.cgorin.jobtracker.model.Company;
+import com.cgorin.jobtracker.exception.JobOfferNotFoundException;
+import com.cgorin.jobtracker.model.Company;
 import com.cgorin.jobtracker.model.JobOffer;
 import com.cgorin.jobtracker.model.Status;
 import com.cgorin.jobtracker.repository.CompanyRepository;
@@ -34,7 +35,9 @@ public class JobOfferService {
         if (jobOffer.getId() != null) {
             throw new InvalidJobOfferException("Cannot specify id when creating a job offer");
         }
-        validateJobOffer(jobOffer);
+        validateJobOfferFields(jobOffer);
+        Company validatedCompany = validateAndGetCompany(jobOffer.getCompany());
+        jobOffer.setCompany(validatedCompany);
         return jobOfferRepository.save(jobOffer);
     }
     public void deleteJobOffer(Long id) {
@@ -43,11 +46,13 @@ public class JobOfferService {
         }
         jobOfferRepository.deleteById(id);
     }
-    public JobOffer updateJobOffer(JobOffer jobOffer,  Long id) {
+    public JobOffer updateJobOffer(JobOffer jobOffer, Long id) {
         JobOffer offer = jobOfferRepository.findById(id)
                 .orElseThrow(() -> new JobOfferNotFoundException(id));
+        Company validatedCompany = validateAndGetCompany(jobOffer.getCompany());
+
         offer.setTitle(jobOffer.getTitle());
-        offer.setCompany(jobOffer.getCompany());
+        offer.setCompany(validatedCompany);
         offer.setLocation(jobOffer.getLocation());
         offer.setStatus(jobOffer.getStatus());
         offer.setJobUrl(jobOffer.getJobUrl());
@@ -58,12 +63,9 @@ public class JobOfferService {
         offer.setOfferType(jobOffer.getOfferType());
         offer.setContact(jobOffer.getContact());
         offer.setEmail(jobOffer.getEmail());
-        validateJobOffer(offer);
-        return jobOfferRepository.save(offer);
-    }
 
-    public List<JobOffer> getByCompany(Company company) {
-        return jobOfferRepository.findByCompany(company);
+        validateJobOfferFields(offer);
+        return jobOfferRepository.save(offer);
     }
 
     public List<JobOffer> getByStatus(Status status)     {
@@ -74,7 +76,7 @@ public class JobOfferService {
         return jobOfferRepository.findByCompanyId(id);
     }
 
-    private void validateJobOffer(JobOffer jobOffer) {
+    private void validateJobOfferFields(JobOffer jobOffer) {
         if (jobOffer.getTitle() == null || jobOffer.getTitle().isBlank())
             throw new InvalidJobOfferException("Title is required");
 
@@ -86,12 +88,20 @@ public class JobOfferService {
 
         if (jobOffer.getOfferType() == null)
             throw new InvalidJobOfferException("Offer type is required");
+    }
 
-        Company storedCompany = companyRepository.findById(jobOffer.getCompany().getId())
-                .orElseThrow(() -> new CompanyNotFoundException(jobOffer.getCompany().getId()));
-
-        if (!storedCompany.equals(jobOffer.getCompany())) {
-            throw new InvalidJobOfferException("Job offer company does not match stored company");
+    private Company validateAndGetCompany(Company company) {
+        if (company == null) {
+            throw new InvalidJobOfferException("Company is required");
         }
+
+        if (company.getId() == null) {
+            throw new InvalidJobOfferException("Company id is required");
+        }
+
+        return companyRepository.findById(company.getId())
+                .orElseThrow(() ->
+                        new CompanyNotFoundException(company.getId())
+                );
     }
 }

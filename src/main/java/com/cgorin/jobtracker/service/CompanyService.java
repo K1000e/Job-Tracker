@@ -43,7 +43,8 @@ public class CompanyService {
     }
 
     public void deleteCompany(Long id) {
-        if (!getCompany(id).getJobOffers().isEmpty()) {
+        Company company = getCompany(id);
+        if (!company.getJobOffers().isEmpty()) {
             throw new CompanyHasJobOffersException(id);
         }
         companyRepository.deleteById(id);

@@ -1,5 +1,6 @@
 package com.cgorin.jobtracker.service;
 
+import com.cgorin.jobtracker.exception.CompanyNotFoundException;
 import com.cgorin.jobtracker.exception.InvalidJobOfferException;
 import com.cgorin.jobtracker.exception.JobOfferNotFoundException;
 import com.cgorin.jobtracker.model.Company;
@@ -39,10 +40,7 @@ class JobOfferServiceTest {
 
     @BeforeEach
     void setup() {
-        company = new Company(
-                "Amadeus",
-                "https://amadeus.com"
-        );
+        company = mock(Company.class);
     }
 
     private JobOffer createJobOffer() {
@@ -115,8 +113,9 @@ class JobOfferServiceTest {
     void addJobOffer_shouldAddJobOffer() {
 
         JobOffer offer = createJobOffer();
+        when(company.getId()).thenReturn(1L);
 
-        when(companyRepository.findById(null))
+        when(companyRepository.findById(1L))
                 .thenReturn(Optional.of(company));
 
         jobOfferService.addJobOffer(offer);
@@ -147,11 +146,12 @@ class JobOfferServiceTest {
     void updateJobOffer_shouldUpdateJobOffer() {
 
         JobOffer oldOffer = createJobOffer();
+        when(company.getId()).thenReturn(1L);
 
         when(jobOfferRepository.findById(1L))
                 .thenReturn(Optional.of(oldOffer));
 
-        when(companyRepository.findById(null))
+        when(companyRepository.findById(1L))
                 .thenReturn(Optional.of(company));
 
 
@@ -264,5 +264,24 @@ class JobOfferServiceTest {
 
         verify(jobOfferRepository)
                 .findByStatus(Status.OFFER);
+    }
+
+    @Test
+    void updateJobOffer_shouldThrowCompanyNotFoundWhenCompanyDoesNotExist() {
+        JobOffer existingOffer = createJobOffer();
+        JobOffer incomingOffer = createJobOffer();
+        when(company.getId()).thenReturn(1L);
+
+        when(jobOfferRepository.findById(1L))
+                .thenReturn(Optional.of(existingOffer));
+        when(companyRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                CompanyNotFoundException.class,
+                () -> jobOfferService.updateJobOffer(incomingOffer, 1L)
+        );
+
+        verify(jobOfferRepository, never()).save(any());
     }
 }
