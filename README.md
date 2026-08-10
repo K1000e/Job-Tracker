@@ -6,7 +6,7 @@ Ce projet a pour objectif de mettre en pratique une architecture backend profess
 
 ---
 
-# 🎯 Objectif du projet
+## 🎯 Objectif du projet
 
 JobTracker permet de gérer :
 
@@ -24,9 +24,9 @@ L'objectif principal est de travailler sur :
 
 ---
 
-# 🛠️ Technologies utilisées
+### 🛠️ Technologies utilisées
 
-## Backend
+### Backend
 
 - Java 17
 - Spring Boot
@@ -36,19 +36,19 @@ L'objectif principal est de travailler sur :
 - Bean Validation
 - Maven
 
-## Base de données
+### Base de données
 
 - PostgreSQL
 - H2 (tests)
 
-## DevOps
+### DevOps
 
 - Docker
 - Docker Compose
 - GitHub Actions
 - Qodana (analyse statique du code)
 
-## Tests
+### Tests
 
 - JUnit 5
 - Mockito
@@ -56,16 +56,16 @@ L'objectif principal est de travailler sur :
 
 ---
 
-# 🚀 Fonctionnalités implémentées
+## 🚀 Fonctionnalités implémentées
 
-## Entreprises
+### Entreprises
 
 ✅ Création d'une entreprise  
 ✅ Consultation des entreprises  
 ✅ Modification d'une entreprise  
 ✅ Suppression d'une entreprise
 
-## Offres d'emploi
+### Offres d'emploi
 
 ✅ Création d'une offre  
 ✅ Consultation des offres  
@@ -74,7 +74,7 @@ L'objectif principal est de travailler sur :
 ✅ Filtrage par statut  
 ✅ Filtrage par entreprise
 
-## Qualité du projet
+### Qualité du projet
 
 ✅ Validation des données  
 ✅ Gestion globale des exceptions  
@@ -85,7 +85,7 @@ L'objectif principal est de travailler sur :
 
 ---
 
-# 🏗️ Architecture
+## 🏗️ Architecture
 
 L'application suit une architecture en couches :
 
@@ -116,7 +116,7 @@ Chaque couche possède une responsabilité dédiée :
 
 ---
 
-# 📂 Structure du projet
+## 📂 Structure du projet
 
 ```text
 JobTracker/
@@ -146,9 +146,9 @@ JobTracker/
 
 ---
 
-# 🔧 Installation
+## 🔧 Installation
 
-## Prérequis
+### Prérequis
 
 - Java 17
 - Docker
@@ -156,7 +156,7 @@ JobTracker/
 
 ---
 
-# 🐳 Lancer avec Docker Compose
+## 🐳 Lancer avec Docker Compose
 
 ```bash
 docker compose up --build
@@ -176,15 +176,15 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-# ▶️ Lancer localement avec Maven
+## ▶️ Lancer localement avec Maven
 
-## Linux / MacOS
+### Linux / MacOS
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-## Windows
+### Windows
 
 ```bash
 mvnw.cmd spring-boot:run
@@ -192,17 +192,17 @@ mvnw.cmd spring-boot:run
 
 ---
 
-# 🧪 Tests
+## 🧪 Tests
 
 Lancer les tests :
 
-## Linux / MacOS
+### Linux / MacOS
 
 ```bash
 ./mvnw test
 ```
 
-## Windows
+### Windows
 
 ```bash
 mvnw.cmd test
@@ -216,7 +216,7 @@ Le projet contient :
 
 ---
 
-# 🔄 Intégration continue
+## 🔄 Intégration continue
 
 Le projet utilise **GitHub Actions** pour automatiser :
 
@@ -228,9 +228,9 @@ Une analyse statique du code est également réalisée avec **Qodana**.
 
 ---
 
-# 📌 Roadmap
+## 📌 Roadmap
 
-## Backend
+### Backend
 
 ✅ API REST Spring Boot  
 ✅ PostgreSQL  
@@ -239,7 +239,7 @@ Une analyse statique du code est également réalisée avec **Qodana**.
 ✅ Swagger/OpenAPI  
 ✅ CI GitHub Actions
 
-## Améliorations futures
+### Améliorations futures
 
 ⬜ Pipeline CD  
 ⬜ Publication d'une image Docker  
@@ -252,7 +252,7 @@ Une analyse statique du code est également réalisée avec **Qodana**.
 
 ---
 
-# 💡 Projet personnel
+## 💡 Projet personnel
 
 Ce projet me permet d'approfondir :
 
