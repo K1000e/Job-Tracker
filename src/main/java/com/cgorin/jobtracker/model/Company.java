@@ -2,6 +2,8 @@ package com.cgorin.jobtracker.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +15,12 @@ public class Company {
     private Long id;
 
     @NotBlank(message = "Company name cannot be blank")
+    @Size(max = 100, message = "Company name cannot exceed 100 characters")
     private String name;
 
     @NotBlank(message = "Company Website cannot be blank")
+    @Size(max = 255, message = "Company website cannot exceed 255 characters")
+    @URL(message = "Company website must be a valid URL")
     private String website;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
