@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 public class ErrorResponse {
 
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
+    private final LocalDateTime timestamp;
+    private final int status;
+    private final String error;
 
     public ErrorResponse(LocalDateTime timestamp, int status, String error) {
         this.timestamp = timestamp;
