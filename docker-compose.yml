@@ -20,7 +20,7 @@ services:
 
 
   jobtracker:
-    build: .
+    build: ./backend
     container_name: jobtracker
     ports:
       - "8080:8080"

@@ -1,162 +1,269 @@
-# JobTracker
+# 💼 JobTracker
 
-Application de gestion de candidatures développée avec Java (Spring Boot).
+Bienvenue dans **JobTracker**, une application développée avec **Java Spring Boot** permettant de centraliser ses opportunités de recrutement.
 
-JobTracker centralise le suivi des candidatures : entreprises, offres et étapes du processus de recrutement.
+Ce projet a pour objectif de mettre en pratique une architecture backend professionnelle avec une **API REST**, une **base de données relationnelle**, des **tests automatisés** et une **intégration continue**.
 
-Table des matières
-- Fonctionnalités
-- Quick Start
-- Configuration
-- Documentation API
-- Exemples d'appels (curl)
-- Structure du projet
-- Stack technique
-- Tests
-- CI / Déploiement
-- Contribution
-- Roadmap
+---
 
+# 🎯 Objectif du projet
 
-Fonctionnalités
-- Gestion des entreprises : création, lecture, mise à jour, suppression
-- Gestion des offres : création, lecture, mise à jour, suppression
-- Filtrage des offres par statut et par entreprise
-- Historique / suivi des étapes de candidature
-- Tests unitaires et d'intégration
+JobTracker permet de gérer :
 
+- les entreprises
+- les offres d'emploi
+- le suivi des opportunités de recrutement
 
-Quick Start
-Prérequis
-- Java 17 (ou OpenJDK 17)
-- Maven (ou wrapper ./mvnw)
-- Docker & Docker Compose (optionnel pour exécution complète)
+L'objectif principal est de travailler sur :
 
-Démarrer avec Docker Compose
-```bash
-docker compose up --build
-```
-Lancer localement avec Maven
-```bash
-./mvnw spring-boot:run
-```
+- la conception d'une API REST
+- la séparation des responsabilités (**Controller / Service / Repository**)
+- la persistance des données avec **JPA/Hibernate**
+- la validation des données et la gestion des erreurs
+- l'automatisation avec **Docker** et **GitHub Actions**
 
-Accéder à l'API
-- URL par défaut : http://localhost:8080
-- Swagger UI : http://localhost:8080/swagger-ui/index.html
+---
 
+# 🛠️ Technologies utilisées
 
-Configuration
-Le projet utilise des profils Spring :
-- application.properties (défaut)
-- application-test.properties (tests)
-- application-prod.properties (production)
+## Backend
 
-Variables d'environnement recommandées (exemples) :
-- SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/jobtracker
-- SPRING_DATASOURCE_USERNAME=jobuser
-- SPRING_DATASOURCE_PASSWORD=secret
-- SPRING_PROFILES_ACTIVE=dev
-
-Conseil : privilégier les variables d'environnement ou un secret manager en production.
-
-
-Documentation API
-La documentation OpenAPI/Swagger est exposée via Springdoc.
-Accès : http://localhost:8080/swagger-ui/index.html
-
-
-Exemples d'appels (curl)
-- Créer une entreprise :
-```bash
-curl -X POST "http://localhost:8080/api/companies" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Acme Corp","website":"https://acme.example"}'
-```
-- Lister les entreprises :
-```bash
-curl http://localhost:8080/api/companies
-```
-- Créer une offre (associée à une entreprise) :
-```bash
-curl -X POST "http://localhost:8080/api/offers" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Backend Developer","companyId":1,"status":"APPLIED"}'
-```
-- Lister les offres et filtrer par statut :
-```bash
-curl "http://localhost:8080/api/offers?status=APPLIED"
-```
-
-(Remarque : ajuster les URLs si les endpoints diffèrent dans le code)
-
-
-Structure du projet (résumé)
-- src/main/java/.../controller : points d'entrée HTTP
-- src/main/java/.../service : logique métier
-- src/main/java/.../repository : accès aux données (Spring Data JPA)
-- src/main/java/.../entity : entités JPA
-- src/main/java/.../exception : gestion des erreurs
-- src/test : tests unitaires et d'intégration
-
-
-Stack technique
-Backend
 - Java 17
-- Spring Boot (Web, Data JPA)
+- Spring Boot
+- Spring Web
+- Spring Data JPA
 - Hibernate
 - Bean Validation
 - Maven
 
-Base de données
-- PostgreSQL (production)
+## Base de données
+
+- PostgreSQL
 - H2 (tests)
 
-Tests
+## DevOps
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Qodana (analyse statique du code)
+
+## Tests
+
 - JUnit 5
 - Mockito
 - Spring Boot Test
 
-DevOps
-- Docker & Docker Compose
-- GitHub Actions (CI)
+---
 
+# 🚀 Fonctionnalités implémentées
 
-Tests
-Lancer la suite de tests :
+## Entreprises
+
+✅ Création d'une entreprise  
+✅ Consultation des entreprises  
+✅ Modification d'une entreprise  
+✅ Suppression d'une entreprise
+
+## Offres d'emploi
+
+✅ Création d'une offre  
+✅ Consultation des offres  
+✅ Modification d'une offre  
+✅ Suppression d'une offre  
+✅ Filtrage par statut  
+✅ Filtrage par entreprise
+
+## Qualité du projet
+
+✅ Validation des données  
+✅ Gestion globale des exceptions  
+✅ Codes HTTP adaptés  
+✅ Tests unitaires  
+✅ Tests d'intégration  
+✅ Documentation Swagger/OpenAPI
+
+---
+
+# 🏗️ Architecture
+
+L'application suit une architecture en couches :
+
+```text
+              Client HTTP
+                  |
+                  ↓
+          Spring Boot Controller
+                  |
+                  ↓
+               Service
+                  |
+                  ↓
+          Repository / JPA
+                  |
+                  ↓
+             PostgreSQL
+
+        (Docker Compose)
+```
+
+Chaque couche possède une responsabilité dédiée :
+
+- **Controller** : gestion des requêtes HTTP
+- **Service** : logique métier
+- **Repository** : accès aux données
+- **Model** : représentation des données métier
+
+---
+
+# 📂 Structure du projet
+
+```text
+JobTracker/
+
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/cgorin/jobtracker/
+│   │   │       ├── controller/
+│   │   │       ├── service/
+│   │   │       ├── repository/
+│   │   │       ├── model/
+│   │   │       └── exception/
+│   │   │
+│   │   └── resources/
+│   │
+│   └── test/
+│       └── java/
+│           └── Tests unitaires et tests d'intégration
+│
+├── Dockerfile
+├── docker-compose.yml
+├── pom.xml
+├── qodana.yaml
+└── README.md
+```
+
+---
+
+# 🔧 Installation
+
+## Prérequis
+
+- Java 17
+- Docker
+- Docker Compose
+
+---
+
+# 🐳 Lancer avec Docker Compose
+
+```bash
+docker compose up --build
+```
+
+L'application sera disponible sur :
+
+```text
+http://localhost:8080
+```
+
+Documentation Swagger :
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+# ▶️ Lancer localement avec Maven
+
+## Linux / MacOS
+
+```bash
+./mvnw spring-boot:run
+```
+
+## Windows
+
+```bash
+mvnw.cmd spring-boot:run
+```
+
+---
+
+# 🧪 Tests
+
+Lancer les tests :
+
+## Linux / MacOS
+
 ```bash
 ./mvnw test
 ```
-Le projet contient des tests unitaires pour les services et des tests d'intégration pour l'API.
 
+## Windows
 
-CI / Déploiement
-Une pipeline GitHub Actions :
-- exécution des tests
-- build Maven
-- construction de l'image Docker
+```bash
+mvnw.cmd test
+```
 
+Le projet contient :
 
-Contribution
-Les contributions sont bienvenues.
-- Forkez le dépôt
-- Créez une branche feature/bugfix
-- Ouvrez une pull request avec une description claire
+- tests unitaires des services
+- tests des controllers
+- tests d'intégration de l'API REST
 
-Un fichier CONTRIBUTING.md peut être ajouté si nécessaire.
+---
 
+# 🔄 Intégration continue
 
-Roadmap (priorités)
-- Finaliser l'API REST et la documentation OpenAPI
-- Interface frontend (Angular)
-- Déploiement cloud (Heroku / Cloud provider)
-- Amélioration du modèle de suivi des candidatures
+Le projet utilise **GitHub Actions** pour automatiser :
 
+✅ l'exécution des tests  
+✅ le build Maven  
+✅ la création de l'image Docker
 
-Licence
-Ajoutez ici le type de licence (ex: MIT) si le projet est open-source.
+Une analyse statique du code est également réalisée avec **Qodana**.
 
+---
 
-Contact
-Pour toute question, ouvrir une issue sur le dépôt GitHub.
+# 📌 Roadmap
 
+## Backend
+
+✅ API REST Spring Boot  
+✅ PostgreSQL  
+✅ Docker Compose  
+✅ Tests automatisés  
+✅ Swagger/OpenAPI  
+✅ CI GitHub Actions
+
+## Améliorations futures
+
+⬜ Pipeline CD  
+⬜ Publication d'une image Docker  
+⬜ Déploiement cloud  
+⬜ Configuration production  
+⬜ HTTPS  
+⬜ Authentification utilisateur  
+⬜ Interface frontend Angular  
+⬜ Gestion avancée des candidatures
+
+---
+
+# 💡 Projet personnel
+
+Ce projet me permet d'approfondir :
+
+- le développement backend Java/Spring
+- les bonnes pratiques d'architecture logicielle
+- les tests automatisés
+- la conteneurisation
+- les outils DevOps
+
+---
+
+🖥️ Développé par : **Camille Gorin**
+
+🏫 École 42 Nice
