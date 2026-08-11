@@ -22,7 +22,9 @@ jobs:
           cache: maven
 
       - name: Test and build
-        run: ./mvnw clean verify
+        working-directory: backend
+        run: ./mvnw -B clean verify
 
       - name: Build Docker image
+        working-directory: backend
         run: docker build -t jobtracker:test .
