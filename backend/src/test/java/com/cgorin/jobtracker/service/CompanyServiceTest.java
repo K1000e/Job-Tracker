@@ -1,5 +1,6 @@
 package com.cgorin.jobtracker.service;
 
+import com.cgorin.jobtracker.exception.CompanyAlreadyExistsException;
 import com.cgorin.jobtracker.exception.CompanyHasJobOffersException;
 import com.cgorin.jobtracker.exception.CompanyNotFoundException;
 import com.cgorin.jobtracker.exception.InvalidCompanyException;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 
@@ -124,6 +128,16 @@ class CompanyServiceTest {
                 .save(any());
     }
 
+	@Test
+	void addCompany_shouldReturnConflictWhenNameAlreadyExists() {
+		when(companyRepository.existsByNameIgnoreCase("Amadeus")).thenReturn(true);
+		Company company = new Company("Amadeus", "https://amadeus.com");
+
+		assertThrows(CompanyAlreadyExistsException.class,
+				() -> companyService.addCompany(company));
+
+		verify(companyRepository, never()).save(any());
+	}
 
     @Test
     void deleteCompany_shouldDeleteCompany() {

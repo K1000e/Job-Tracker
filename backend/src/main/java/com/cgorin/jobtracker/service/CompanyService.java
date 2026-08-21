@@ -5,6 +5,7 @@ import com.cgorin.jobtracker.model.Company;
 import com.cgorin.jobtracker.repository.CompanyRepository;
 import com.cgorin.jobtracker.exception.InvalidCompanyException;
 import com.cgorin.jobtracker.exception.CompanyNotFoundException;
+import com.cgorin.jobtracker.exception.CompanyAlreadyExistsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +31,9 @@ public class CompanyService {
             throw new InvalidCompanyException("Cannot specify id when creating a company");
         }
         validateCompany(company);
+		if (companyRepository.existsByNameIgnoreCase(company.getName())) {
+			throw new CompanyAlreadyExistsException(company.getName());
+        }
         return companyRepository.save(company);
     }
 
